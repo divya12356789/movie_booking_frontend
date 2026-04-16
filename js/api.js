@@ -11,11 +11,11 @@ function resolveBaseUrl() {
 	}
 
 	if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-		return "https://your-backend.up.railway.app";
+		return "https://moviebookingbackend-production-93d3.up.railway.app.up.railway.app";
 	}
 
 	// Fallback for deployed static frontend.
-	return "https://your-backend.up.railway.app";
+	return "https://moviebookingbackend-production-93d3.up.railway.app.up.railway.app";
 }
 
 const BASE_URL = resolveBaseUrl();

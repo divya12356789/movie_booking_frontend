@@ -14,8 +14,8 @@ function resolveBaseUrl() {
 		return "http://localhost:8080";
 	}
 
-	// Fallback for deployed static frontend. Set MOVIE_BOOKING_API_BASE_URL in HTML or localStorage.
-	return "https://your-railway-backend.up.railway.app";
+	// Fallback for deployed static frontend.
+	return "https://moviebookingbackend-production-93d3.up.railway.app";
 }
 
 const BASE_URL = resolveBaseUrl();

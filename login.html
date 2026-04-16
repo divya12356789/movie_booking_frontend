@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic | Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input
+                    id="siteSearchInput"
+                    name="search"
+                    type="search"
+                    placeholder="Search for movies by title, genre or ID"
+                >
+            </form>
+            <div class="header-actions">
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <section class="panel" style="max-width: 480px; margin: 0 auto;">
+            <h1 class="page-title">Login</h1>
+            <p class="page-subtitle">Sign in with your registered email and password.</p>
+            <div id="statusBox" class="status" aria-live="polite"></div>
+
+            <form id="loginForm" class="form-grid">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" placeholder="Enter your password" required>
+                </div>
+
+                <button class="button" type="submit">Login</button>
+            </form>
+
+            <p class="auth-switch">
+                <span>Create your account?</span>
+                <a href="register.html">Register</a>
+            </p>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const statusBox = document.getElementById("statusBox");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const searchTerm = siteSearchInput.value.trim();
+            const destination = searchTerm
+                ? `index.html?search=${encodeURIComponent(searchTerm)}`
+                : "index.html";
+
+            window.location.href = destination;
+        });
+
+        function redirectIfAuthenticated() {
+            if (!isAuthenticated()) {
+                return;
+            }
+
+            window.location.href = "movies.html";
+        }
+
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!email || !password) {
+                showStatus("Please enter both email and password.", "error");
+                return;
+            }
+
+            try {
+                const loginResponse = await loginUser({ email, password });
+                const matchedUser = loginResponse?.user;
+
+                if (!matchedUser?.id || !loginResponse?.token) {
+                    throw new Error("Invalid login response from server.");
+                }
+
+                setCurrentUserProfile(matchedUser);
+                setAuthToken(loginResponse.token);
+
+                showStatus("Login successful. Redirecting to movies...", "success");
+                setTimeout(() => {
+                    window.location.href = "movies.html";
+                }, 700);
+            } catch (error) {
+                showStatus(error.message || "Unable to login now. Please make sure backend is running.", "error");
+                console.error(error);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", redirectIfAuthenticated);
+    </script>
+</body>
+</html>

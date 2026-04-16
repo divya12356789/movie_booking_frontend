@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .landing-layout {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .filter-sidebar {
+            display: grid;
+            gap: 18px;
+        }
+
+        .filter-panel {
+            display: grid;
+            gap: 14px;
+        }
+
+        .filter-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .filter-subtitle {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.93rem;
+            line-height: 1.6;
+        }
+
+        .filter-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+        }
+
+        .filter-option:hover {
+            transform: translateY(-1px);
+            border-color: rgba(245, 158, 11, 0.22);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .filter-option.active {
+            border-color: rgba(245, 158, 11, 0.38);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(15, 23, 42, 0.92));
+            box-shadow: 0 16px 32px rgba(245, 158, 11, 0.16);
+        }
+
+        .filter-count {
+            color: #f59e0b;
+            font-size: 0.84rem;
+            font-weight: 800;
+        }
+
+        .landing-main {
+            display: grid;
+            gap: 18px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .section-kicker {
+            margin: 0 0 8px;
+            color: #f59e0b;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.9rem, 3vw, 2.9rem);
+            line-height: 1.05;
+            color: #ffffff;
+        }
+
+        .section-meta {
+            color: #94a3b8;
+            font-size: 0.96rem;
+            font-weight: 600;
+        }
+
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .recommendation-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(251, 113, 133, 0.18);
+            border-radius: 24px;
+            background:
+                radial-gradient(circle at top right, rgba(251, 113, 133, 0.18), transparent 32%),
+                linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.96));
+            box-shadow: 0 24px 60px rgba(2, 6, 23, 0.36);
+            cursor: pointer;
+        }
+
+        .recommendation-poster {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            display: block;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .recommendation-content {
+            display: grid;
+            gap: 14px;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .recommendation-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .recommendation-badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(251, 113, 133, 0.16);
+            color: #fda4af;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .recommendation-rank {
+            color: #f8fafc;
+            font-size: 0.94rem;
+            font-weight: 800;
+        }
+
+        .recommendation-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.45rem, 2.3vw, 1.9rem);
+            line-height: 1.08;
+            color: #ffffff;
+        }
+
+        .recommendation-copy {
+            margin: 0;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .recommendation-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .recommendation-meta span {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+            font-size: 0.83rem;
+            font-weight: 700;
+        }
+
+        .recommendation-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .recommendation-note {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .helper-panel {
+            display: grid;
+            gap: 10px;
+            padding: 18px;
+            border: 1px solid rgba(245, 158, 11, 0.18);
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.88));
+        }
+
+        .helper-panel strong {
+            color: #f8fafc;
+            font-size: 1rem;
+        }
+
+        .helper-panel span {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 960px) {
+            .landing-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .recommendation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input
+                    id="siteSearchInput"
+                    name="search"
+                    type="search"
+                    placeholder="Search for movies by title, genre or ID"
+                >
+            </form>
+            <div class="header-actions">
+                <div class="header-select">
+                    <label class="sr-only" for="citySelect">Select city</label>
+                    <select id="citySelect" name="city">
+                        <option value="">Loading city catalog...</option>
+                    </select>
+                </div>
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <div class="landing-layout">
+            <aside class="filter-sidebar">
+                <section class="panel filter-panel">
+                    <div>
+                        <h2 class="filter-title">Genre</h2>
+                        <p class="filter-subtitle">Filter movies by genre to narrow the city lineup.</p>
+                    </div>
+                    <div id="genreFilters" class="filter-list"></div>
+                </section>
+
+                <section class="panel filter-panel">
+                    <div>
+                        <h2 class="filter-title">Language</h2>
+                        <p class="filter-subtitle">Language filters are derived from the available movie data.</p>
+                    </div>
+                    <div id="languageFilters" class="filter-list"></div>
+                </section>
+
+                <div class="helper-panel">
+                    <strong>Quick Tip</strong>
+                    <span>Pick a city, explore a movie, then use Login in the top-right to continue booking.</span>
+                </div>
+            </aside>
+
+            <main class="panel landing-main">
+                <div class="section-header">
+                    <div>
+                        <p class="section-kicker">Recommended</p>
+                        <h1 id="sectionTitle" class="section-title">General Recommendations</h1>
+                    </div>
+                    <div id="resultsMeta" class="section-meta">Live city recommendations</div>
+                </div>
+                <p class="page-subtitle">Browse the current city lineup and refine it with genre and language filters.</p>
+                <div id="statusBox" class="status" aria-live="polite"></div>
+                <div id="recommendedList" class="recommendation-grid"></div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const citySelect = document.getElementById("citySelect");
+        const genreFilters = document.getElementById("genreFilters");
+        const languageFilters = document.getElementById("languageFilters");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+        const statusBox = document.getElementById("statusBox");
+        const resultsMeta = document.getElementById("resultsMeta");
+        const sectionTitle = document.getElementById("sectionTitle");
+        const recommendedList = document.getElementById("recommendedList");
+
+        const recommendationLabels = ["Top Pick", "Trending Choice", "Fan Favorite", "Weekend Watch", "Popular Pick", "Must Watch"];
+
+        const params = new URLSearchParams(window.location.search);
+        let activeSearchTerm = params.get("search") || "";
+        let activeCityId = params.get("cityId") || getSelectedCityId() || "";
+        let activeGenre = params.get("genre") || "All";
+        let activeLanguage = params.get("language") || "All";
+        let movieCache = [];
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        function clearStatus() {
+            statusBox.textContent = "";
+            statusBox.className = "status";
+        }
+
+        function showCitySelectionMessage() {
+            resultsMeta.textContent = "Select a city to continue";
+            recommendedList.innerHTML = '<div class="empty-state">Please select a city to explore movies</div>';
+            showStatus("Please select a city to explore movies", "info");
+        }
+
+        function hideCitySelectionMessage() {
+            clearStatus();
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
+        function formatDuration(duration) {
+            if (duration === undefined || duration === null || duration === "") {
+                return "Duration not set";
+            }
+
+            return `${duration} min`;
+        }
+
+        function createPlaceholderPoster(movie, label = "RECOMMENDED") {
+            const title = String(movie.title || "Cinemagic").slice(0, 26);
+            const genre = String(movie.genre || "Cinema");
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+                    <defs>
+                        <linearGradient id="posterGradient" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#0f172a" />
+                            <stop offset="55%" stop-color="#1e293b" />
+                            <stop offset="100%" stop-color="#020617" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="600" height="800" fill="url(#posterGradient)" />
+                    <circle cx="482" cy="126" r="134" fill="rgba(251,113,133,0.18)" />
+                    <rect x="42" y="42" width="516" height="716" rx="24" fill="none" stroke="rgba(251,113,133,0.28)" stroke-width="3" />
+                    <text x="56" y="122" fill="#fb7185" font-size="34" font-family="Segoe UI, Arial, sans-serif" font-weight="700">${escapeHtml(label)}</text>
+                    <text x="56" y="530" fill="#ffffff" font-size="64" font-family="Georgia, serif" font-weight="700">${escapeHtml(title)}</text>
+                    <text x="56" y="596" fill="#cbd5e1" font-size="30" font-family="Segoe UI, Arial, sans-serif">${escapeHtml(genre)}</text>
+                </svg>
+            `;
+
+            return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+        }
+
+        function getPosterImage(movie) {
+            const poster = movie.posterUrl || movie.poster || movie.imageUrl || movie.image;
+            return poster ? String(poster) : createPlaceholderPoster(movie);
+        }
+
+        function getMovieLanguages(movie) {
+            if (Array.isArray(movie?.languages) && movie.languages.length > 0) {
+                return movie.languages
+                    .map((language) => String(language).trim())
+                    .filter((language) => language && language.toUpperCase() !== "N/A");
+            }
+
+            if (movie?.language) {
+                const normalizedLanguage = String(movie.language).trim();
+                if (normalizedLanguage && normalizedLanguage.toUpperCase() !== "N/A") {
+                    return [normalizedLanguage];
+                }
+            }
+
+            return [];
+        }
+
+        function getRecommendationCopy(movie, index) {
+            const title = movie?.title || "This movie";
+            const genre = movie?.genre || "cinema";
+            const languages = getMovieLanguages(movie).join(", ");
+            const descriptions = [
+                `${title} ek strong ${genre.toLowerCase()} pick hai aur ${languages} lineup me kaafi watch-worthy lagti hai.`,
+                `Agar tumhe ${genre.toLowerCase()} mood chahiye, to ${title} quick recommendation ke liye perfect hai.`,
+                `${title} ko humne shortlist kiya hai because yeh ${languages} preference ke saath easily fit ho jati hai.`,
+                `Current selection me ${title} un titles me se hai jo fast decision ke liye best lagti hai.`
+            ];
+
+            return descriptions[index % descriptions.length];
+        }
+
+        function getMovieDetailsUrl(movieId) {
+            const cityQuery = activeCityId ? `&cityId=${encodeURIComponent(activeCityId)}` : "";
+            return `movie-details.html?movieId=${encodeURIComponent(movieId)}${cityQuery}`;
+        }
+
+        function getMovieAction(movie) {
+            return {
+                href: getMovieDetailsUrl(movie.id),
+                label: "View Details",
+                note: "Open details to pick show, then continue booking."
+            };
+        }
+
+        function syncUrlState() {
+            const nextParams = new URLSearchParams();
+
+            if (activeSearchTerm) {
+                nextParams.set("search", activeSearchTerm);
+            }
+
+            if (activeCityId) {
+                nextParams.set("cityId", activeCityId);
+            }
+
+            if (activeGenre !== "All") {
+                nextParams.set("genre", activeGenre);
+            }
+
+            if (activeLanguage !== "All") {
+                nextParams.set("language", activeLanguage);
+            }
+
+            const nextQuery = nextParams.toString();
+            const nextUrl = nextQuery ? `${window.location.pathname}?${nextQuery}` : window.location.pathname;
+            window.history.replaceState({}, "", nextUrl);
+        }
+
+        function getGenreOptions() {
+            return [...new Set(movieCache.map((movie) => String(movie.genre || "").trim()).filter(Boolean))].sort((left, right) =>
+                left.localeCompare(right)
+            );
+        }
+
+        function getLanguageOptions() {
+            return [...new Set(movieCache.flatMap((movie) => getMovieLanguages(movie)))].sort((left, right) =>
+                left.localeCompare(right)
+            );
+        }
+
+        function filterMovies(options = {}) {
+            const searchTerm = String(options.searchTerm ?? activeSearchTerm).trim().toLowerCase();
+            const genre = options.genre ?? activeGenre;
+            const language = options.language ?? activeLanguage;
+
+            return movieCache.filter((movie) => {
+                const matchesSearch = !searchTerm || [movie.title, movie.genre, movie.id, ...getMovieLanguages(movie)]
+                    .some((value) => String(value || "").toLowerCase().includes(searchTerm));
+                const matchesGenre = genre === "All" || String(movie.genre || "Other") === genre;
+                const matchesLanguage = language === "All" || getMovieLanguages(movie).includes(language);
+
+                return matchesSearch && matchesGenre && matchesLanguage;
+            });
+        }
+
+        function getOptionCount(filterType, value) {
+            const filteredMovies = filterMovies({
+                searchTerm: activeSearchTerm,
+                genre: filterType === "genre" ? value : activeGenre,
+                language: filterType === "language" ? value : activeLanguage
+            });
+
+            return filteredMovies.length;
+        }
+
+        function renderFilterButtons(container, filterType, options, activeValue) {
+            container.innerHTML = options.map((option) => `
+                <button
+                    type="button"
+                    class="filter-option ${option === activeValue ? "active" : ""}"
+                    data-filter-type="${filterType}"
+                    data-filter-value="${escapeHtml(option)}"
+                >
+                    <span>${escapeHtml(option)}</span>
+                </button>
+            `).join("");
+        }
+
+        function renderFilters() {
+            const genreOptions = getGenreOptions();
+            const languageOptions = getLanguageOptions();
+
+            if (!genreOptions.includes(activeGenre)) {
+                activeGenre = "All";
+            }
+
+            if (!languageOptions.includes(activeLanguage)) {
+                activeLanguage = "All";
+            }
+
+            renderFilterButtons(genreFilters, "genre", genreOptions, activeGenre);
+            renderFilterButtons(languageFilters, "language", languageOptions, activeLanguage);
+        }
+
+        function renderRecommendations(movies) {
+            const hasSelectedCity = Boolean(activeCityId);
+
+            if (!movies || movies.length === 0) {
+                if (!activeSearchTerm && movieCache.length > 0 && (activeGenre !== "All" || activeLanguage !== "All")) {
+                    activeGenre = "All";
+                    activeLanguage = "All";
+                    syncUrlState();
+                    renderFilters();
+                    renderRecommendations(filterMovies());
+                    return;
+                }
+
+                resultsMeta.textContent = "0 recommendations";
+                if (hasSelectedCity) {
+                    sectionTitle.textContent = "Recommended Movies";
+                    recommendedList.innerHTML = '<div class="empty-state">Currently no shows available in your city</div>';
+                    showStatus("Try another city or check back later for new shows.", "info");
+                } else {
+                    sectionTitle.textContent = "General Recommendations";
+                    recommendedList.innerHTML = '<div class="empty-state">No general recommendations available right now.</div>';
+                    showStatus("Try selecting a city for live show-based recommendations.", "info");
+                }
+                return;
+            }
+
+            if (hasSelectedCity) {
+                clearStatus();
+            }
+
+            if (hasSelectedCity) {
+                const selectedCityName = citySelect.selectedOptions[0]?.textContent || getSelectedCityName() || "selected city";
+                sectionTitle.textContent = "Recommended Movies";
+                resultsMeta.textContent = `${movies.length} recommended movies in ${selectedCityName}`;
+            } else {
+                sectionTitle.textContent = "General Recommendations";
+                resultsMeta.textContent = `${movies.length} general recommendations`;
+            }
+
+            recommendedList.innerHTML = movies.map((movie, index) => {
+                const action = getMovieAction(movie);
+
+                return `
+                    <article class="recommendation-card" data-details-url="${getMovieDetailsUrl(movie.id)}" role="link" tabindex="0" aria-label="Open details for ${escapeHtml(movie.title || "Untitled Movie")}">
+                        <img
+                            class="recommendation-poster"
+                            src="${getPosterImage(movie)}"
+                            alt="${escapeHtml(movie.title || "Recommended movie poster")}"
+                            loading="lazy"
+                        >
+                        <div class="recommendation-content">
+                            <div class="recommendation-top">
+                                <span class="recommendation-badge">${recommendationLabels[index % recommendationLabels.length]}</span>
+                                <span class="recommendation-rank">#${index + 1}</span>
+                            </div>
+                            <h2 class="recommendation-title">${escapeHtml(movie.title || "Untitled Movie")}</h2>
+                            <p class="recommendation-copy">${escapeHtml(getRecommendationCopy(movie, index))}</p>
+                            <div class="recommendation-meta">
+                                <span>${escapeHtml(movie.genre || "Featured")}</span>
+                                <span>${escapeHtml(getMovieLanguages(movie).join(", "))}</span>
+                                <span>${escapeHtml(formatDuration(movie.duration))}</span>
+                            </div>
+                            <div class="recommendation-actions">
+                                <a class="button" href="${action.href}">${action.label}</a>
+                                <span class="recommendation-note">${action.note}</span>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        function applyFilters() {
+            siteSearchInput.value = activeSearchTerm;
+            syncUrlState();
+            renderFilters();
+            renderRecommendations(filterMovies());
+        }
+
+        function handleRecommendationCardOpen(target) {
+            const card = target.closest(".recommendation-card");
+            if (!card) {
+                return;
+            }
+
+            const detailsUrl = card.dataset.detailsUrl;
+            if (!detailsUrl) {
+                return;
+            }
+
+            if (target.closest("a, button, input, select, textarea, label")) {
+                return;
+            }
+
+            window.location.href = detailsUrl;
+        }
+
+        function syncSelectedCity() {
+            const selectedOption = citySelect.selectedOptions[0];
+            if (!selectedOption || !selectedOption.value) {
+                setSelectedCity(null);
+                return;
+            }
+
+            setSelectedCity({
+                id: selectedOption.value,
+                name: selectedOption.textContent
+            });
+        }
+
+        function renderCityOptions(cities) {
+            if (!cities || cities.length === 0) {
+                citySelect.innerHTML = '<option value="">No cities available</option>';
+                activeCityId = "";
+                setSelectedCity(null);
+                return;
+            }
+
+            const preferredCityId = String(activeCityId || "");
+            citySelect.innerHTML = `
+                <option value="">Select city</option>
+                ${cities.map((city) => `
+                <option value="${escapeHtml(city.id)}" ${String(city.id) === preferredCityId ? "selected" : ""}>
+                    ${escapeHtml(city.name)}
+                </option>
+            `).join("")}`;
+
+            if (preferredCityId && cities.some((city) => String(city.id) === preferredCityId)) {
+                citySelect.value = preferredCityId;
+            } else {
+                citySelect.value = "";
+            }
+
+            activeCityId = citySelect.value;
+            syncSelectedCity();
+        }
+
+        async function loadGeneralMovies() {
+            showStatus("Loading recommendations...", "info");
+            sectionTitle.textContent = "General Recommendations";
+            resultsMeta.textContent = "General recommendations";
+
+            try {
+                const allMovies = await getMovies();
+                movieCache = allMovies || [];
+                renderFilters();
+                const filteredMovies = filterMovies();
+                clearStatus();
+                renderRecommendations(filteredMovies);
+            } catch (error) {
+                movieCache = [];
+                renderFilters();
+                recommendedList.innerHTML = '<div class="empty-state">No general recommendations available right now.</div>';
+                showStatus(error.message || "General recommendations could not be loaded.", "error");
+                console.error(error);
+            }
+        }
+
+        async function loadCityMovies() {
+            const selectedCityId = activeCityId;
+            if (!selectedCityId) {
+                await loadGeneralMovies();
+                return;
+            }
+
+            hideCitySelectionMessage();
+
+            showStatus("Loading movies for selected city...", "info");
+            recommendedList.innerHTML = '<div class="empty-state">Recommended movies are loading...</div>';
+
+            try {
+                const [cityMovies, cityShows] = await Promise.all([
+                    getMoviesByCity(activeCityId),
+                    getMovieShows({ cityId: activeCityId })
+                ]);
+
+                const availableMovieIds = new Set((cityShows || []).map((show) => String(show.movieId)));
+                movieCache = (cityMovies || []).filter((movie) => availableMovieIds.has(String(movie.id)));
+                renderFilters();
+                renderRecommendations(filterMovies());
+            } catch (error) {
+                movieCache = [];
+                resultsMeta.textContent = "Recommendations unavailable";
+                recommendedList.innerHTML = '<div class="empty-state">Selected city ke liye movies load nahi ho pa rahi hain.</div>';
+                showStatus(error.message || "City based movies load nahi ho pa rahi hain.", "error");
+                console.error(error);
+            }
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            activeSearchTerm = siteSearchInput.value.trim();
+            applyFilters();
+        });
+
+        siteSearchInput.addEventListener("input", function () {
+            activeSearchTerm = siteSearchInput.value.trim();
+            applyFilters();
+        });
+
+        genreFilters.addEventListener("click", function (event) {
+            const button = event.target.closest("[data-filter-type='genre']");
+            if (!button) {
+                return;
+            }
+
+            activeGenre = button.dataset.filterValue || "All";
+            applyFilters();
+        });
+
+        languageFilters.addEventListener("click", function (event) {
+            const button = event.target.closest("[data-filter-type='language']");
+            if (!button) {
+                return;
+            }
+
+            activeLanguage = button.dataset.filterValue || "All";
+            applyFilters();
+        });
+
+        recommendedList.addEventListener("click", function (event) {
+            handleRecommendationCardOpen(event.target);
+        });
+
+        recommendedList.addEventListener("keydown", function (event) {
+            if (event.key !== "Enter" && event.key !== " ") {
+                return;
+            }
+
+            const card = event.target.closest(".recommendation-card");
+            if (!card) {
+                return;
+            }
+
+            event.preventDefault();
+            const detailsUrl = card.dataset.detailsUrl;
+            if (detailsUrl) {
+                window.location.href = detailsUrl;
+            }
+        });
+
+        citySelect.addEventListener("change", async function () {
+            activeCityId = citySelect.value;
+            activeGenre = "All";
+            activeLanguage = "All";
+            syncSelectedCity();
+            await loadCityMovies();
+        });
+
+        async function loadLandingMovies() {
+            try {
+                showStatus("Loading city catalog...", "info");
+                const cities = await getCities();
+                renderCityOptions(cities || []);
+
+                if (activeCityId) {
+                    await loadCityMovies();
+                    return;
+                }
+
+                await loadGeneralMovies();
+            } catch (error) {
+                resultsMeta.textContent = "Recommendations unavailable";
+                recommendedList.innerHTML = '<div class="empty-state">Cities and recommendations are not loading right now.</div>';
+                showStatus("Backend is not responding or the catalog is empty.", "error");
+                console.error(error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadLandingMovies);
+    </script>
+</body>
+</html>

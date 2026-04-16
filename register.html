@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic | Register</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input
+                    id="siteSearchInput"
+                    name="search"
+                    type="search"
+                    placeholder="Search for movies by title, genre or ID"
+                >
+            </form>
+            <div class="header-actions">
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <section class="panel" style="max-width: 480px; margin: 0 auto;">
+            <h1 class="page-title">Register User</h1>
+            <p class="page-subtitle">Create your account here, then sign in from the login page to continue.</p>
+            <div id="statusBox" class="status" aria-live="polite"></div>
+
+            <form id="registerForm" class="form-grid">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input id="name" name="name" type="text" placeholder="Enter your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input id="age" name="age" type="number" min="1" max="120" placeholder="Enter your age" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input id="phoneNumber" name="phoneNumber" type="tel" placeholder="Enter your phone number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" placeholder="Enter your password" required>
+                </div>
+
+                <button class="button" type="submit">Create Account</button>
+            </form>
+
+            <p class="auth-switch">
+                <span>Already have an account?</span>
+                <a href="login.html">Login</a>
+            </p>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const statusBox = document.getElementById("statusBox");
+        const form = document.getElementById("registerForm");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const searchTerm = siteSearchInput.value.trim();
+            const destination = searchTerm
+                ? `index.html?search=${encodeURIComponent(searchTerm)}`
+                : "index.html";
+
+            window.location.href = destination;
+        });
+
+        function redirectIfAuthenticated() {
+            if (!isAuthenticated()) {
+                return;
+            }
+
+            window.location.href = "movies.html";
+        }
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const age = Number(document.getElementById("age").value);
+            const phoneNumber = document.getElementById("phoneNumber").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!name || !email || !age || !phoneNumber || !password) {
+                showStatus("Please fill in all fields.", "error");
+                return;
+            }
+
+            try {
+                const user = await signupUser({ name, age, email, phoneNumber, password });
+                clearSessionStorage();
+                showStatus(`User registered successfully. Your user ID is ${user.id}. Redirecting to login...`, "success");
+                form.reset();
+
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 900);
+            } catch (error) {
+                showStatus(error.message || "Failed to register user. Please try again.", "error");
+                console.error(error);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", redirectIfAuthenticated);
+    </script>
+</body>
+</html>

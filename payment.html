@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic | Payment</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .payment-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .payment-card,
+        .payment-summary {
+            display: grid;
+            gap: 18px;
+            padding: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.96));
+            box-shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
+        }
+
+        .payment-kicker {
+            color: #f59e0b;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .payment-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.04;
+            color: #ffffff;
+        }
+
+        .payment-copy {
+            margin: 0;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .payment-total {
+            display: grid;
+            gap: 6px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(37, 99, 235, 0.12);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .payment-total span:first-child {
+            color: #bfdbfe;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .payment-total strong {
+            color: #ffffff;
+            font-size: 1.8rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .summary-row span:first-child {
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+
+        .summary-row strong {
+            text-align: right;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hint-box {
+            padding: 16px;
+            border-radius: 16px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.18);
+            color: #f8fafc;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 960px) {
+            .payment-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input id="siteSearchInput" name="search" type="search" placeholder="Search for movies by title, genre or ID">
+            </form>
+            <div class="header-actions">
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="booking.html">Booking</a>
+                    <a href="history.html">History</a>
+                </nav>
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <section class="panel">
+            <div id="statusBox" class="status" aria-live="polite"></div>
+            <div class="payment-layout">
+                <section class="payment-card">
+                    <div>
+                        <div class="payment-kicker">Dummy Payment</div>
+                        <h1 class="payment-title">Confirm and pay for your booking</h1>
+                        <p class="payment-copy">This is a simulated payment step. Review the booking summary, enter any sample payment details, then click Pay Now to create the booking and continue to confirmation.</p>
+                    </div>
+
+                    <div class="payment-total">
+                        <span>Total Amount</span>
+                        <strong id="totalAmountLabel">-</strong>
+                    </div>
+
+                    <form id="paymentForm" class="form-grid">
+                        <div class="card-grid">
+                            <div class="form-group">
+                                <label for="cardName">Name on Card</label>
+                                <input id="cardName" type="text" placeholder="Your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expiry">Expiry</label>
+                                <input id="expiry" type="text" maxlength="5" placeholder="MM/YY" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input id="cvv" type="password" maxlength="4" placeholder="123" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Payment Note</label>
+                            <input id="notes" type="text" placeholder="Optional note for this demo payment">
+                        </div>
+
+                        <div class="form-actions">
+                            <button id="payButton" class="button" type="submit">Pay Now</button>
+                            <a class="button secondary" href="booking.html">Back to Booking</a>
+                        </div>
+                    </form>
+                </section>
+
+                <aside class="payment-summary">
+                    <div>
+                        <h2 class="section-heading">Booking Summary</h2>
+                        <p class="page-subtitle">Your selected movie, show and seats are loaded from the previous step.</p>
+                    </div>
+
+                    <div class="summary-grid">
+                        <div class="summary-row"><span>Movie</span><strong id="movieLabel">-</strong></div>
+                        <div class="summary-row"><span>Theatre</span><strong id="theatreLabel">-</strong></div>
+                        <div class="summary-row"><span>Screen</span><strong id="screenLabel">-</strong></div>
+                        <div class="summary-row"><span>Show Time</span><strong id="showLabel">-</strong></div>
+                        <div class="summary-row"><span>Seats</span><strong id="seatsLabel">-</strong></div>
+                    </div>
+
+                    <div class="hint-box">
+                        This page is intentionally dummy payment. No real gateway is used. On success, the booking is created and you are redirected to the ticket confirmation page.
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const PENDING_BOOKING_KEY = "movieBookingPendingBooking";
+        const LAST_BOOKING_KEY = "movieBookingLastBooking";
+
+        const statusBox = document.getElementById("statusBox");
+        const paymentForm = document.getElementById("paymentForm");
+        const payButton = document.getElementById("payButton");
+        const totalAmountLabel = document.getElementById("totalAmountLabel");
+        const movieLabel = document.getElementById("movieLabel");
+        const theatreLabel = document.getElementById("theatreLabel");
+        const screenLabel = document.getElementById("screenLabel");
+        const showLabel = document.getElementById("showLabel");
+        const seatsLabel = document.getElementById("seatsLabel");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+
+        let pendingBooking = null;
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        function formatPrice(value) {
+            return new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0
+            }).format(Number(value || 0));
+        }
+
+        function formatShowTime(value) {
+            if (!value) {
+                return "-";
+            }
+
+            return new Date(value).toLocaleString("en-IN", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function loadPendingBooking() {
+            const stored = sessionStorage.getItem(PENDING_BOOKING_KEY);
+            if (!stored) {
+                window.location.href = "booking.html";
+                return;
+            }
+
+            try {
+                pendingBooking = JSON.parse(stored);
+            } catch (error) {
+                sessionStorage.removeItem(PENDING_BOOKING_KEY);
+                window.location.href = "booking.html";
+                return;
+            }
+
+            totalAmountLabel.textContent = formatPrice(pendingBooking.totalAmount);
+            movieLabel.textContent = pendingBooking.movieTitle || "-";
+            theatreLabel.textContent = pendingBooking.theatreName || "-";
+            screenLabel.textContent = pendingBooking.screenName || "-";
+            showLabel.textContent = formatShowTime(pendingBooking.showStart);
+            seatsLabel.textContent = Array.isArray(pendingBooking.seatNumbers) ? pendingBooking.seatNumbers.join(", ") : "-";
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const searchTerm = siteSearchInput.value.trim();
+            window.location.href = searchTerm ? `index.html?search=${encodeURIComponent(searchTerm)}` : "index.html";
+        });
+
+        paymentForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            if (!pendingBooking) {
+                showStatus("Booking data not found. Please start again.", "error");
+                return;
+            }
+
+            if (!isAuthenticated()) {
+                showStatus("Please login first.", "error");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const cardName = document.getElementById("cardName").value.trim();
+            const cardNumber = document.getElementById("cardNumber").value.trim();
+            const expiry = document.getElementById("expiry").value.trim();
+            const cvv = document.getElementById("cvv").value.trim();
+
+            if (!cardName || !cardNumber || !expiry || !cvv) {
+                showStatus("Please fill all payment details.", "error");
+                return;
+            }
+
+            payButton.disabled = true;
+            payButton.textContent = "Processing...";
+            showStatus("Processing payment...", "info");
+
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 900));
+
+                const createdBooking = await createBooking({
+                    userId: Number(pendingBooking.userId),
+                    showId: Number(pendingBooking.showId),
+                    showSeatIds: pendingBooking.showSeatIds
+                });
+
+                sessionStorage.setItem(LAST_BOOKING_KEY, JSON.stringify(createdBooking));
+                sessionStorage.removeItem(PENDING_BOOKING_KEY);
+                showStatus("Payment successful. Redirecting to confirmation...", "success");
+                window.location.href = `confirmation.html?bookingId=${encodeURIComponent(createdBooking.id)}`;
+            } catch (error) {
+                showStatus(error.message || "Payment failed. Please try again.", "error");
+                payButton.disabled = false;
+                payButton.textContent = "Pay Now";
+                console.error(error);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", loadPendingBooking);
+    </script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic | Movie Details</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .details-layout {
+            display: grid;
+            gap: 24px;
+        }
+
+        .details-card,
+        .shows-card {
+            display: grid;
+            gap: 16px;
+            padding: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.96));
+            box-shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
+        }
+
+        .details-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.04;
+            color: #ffffff;
+        }
+
+        .details-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .details-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+            font-size: 0.86rem;
+            font-weight: 700;
+        }
+
+        .shows-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .show-card {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .show-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            color: #e2e8f0;
+            font-weight: 700;
+        }
+
+        .show-sub {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input id="siteSearchInput" name="search" type="search" placeholder="Search for movies by title, genre or ID">
+            </form>
+            <div class="header-actions">
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="movies.html">Movies</a>
+                </nav>
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <section class="details-layout">
+            <div id="statusBox" class="status" aria-live="polite"></div>
+
+            <section class="details-card">
+                <div>
+                    <p class="section-kicker">Movie Details</p>
+                    <h1 id="movieTitle" class="details-title">Loading movie...</h1>
+                </div>
+
+                <p id="movieCopy" class="page-subtitle">Pick your city and show to continue.</p>
+
+                <div class="details-meta">
+                    <span id="genreChip" class="details-chip">Genre: -</span>
+                    <span id="durationChip" class="details-chip">Duration: -</span>
+                    <span id="languageChip" class="details-chip">Language: -</span>
+                    <span id="cityChip" class="details-chip">City: Select city</span>
+                    <span id="timingChip" class="details-chip">Timing: -</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="citySelect">City</label>
+                    <select id="citySelect">
+                        <option value="">Loading cities...</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="shows-card">
+                <div>
+                    <h2 class="section-heading">Available Shows</h2>
+                    <p class="page-subtitle">Select a show and continue to booking.</p>
+                </div>
+
+                <div id="showList" class="shows-grid"></div>
+            </section>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const statusBox = document.getElementById("statusBox");
+        const movieTitle = document.getElementById("movieTitle");
+        const movieCopy = document.getElementById("movieCopy");
+        const genreChip = document.getElementById("genreChip");
+        const durationChip = document.getElementById("durationChip");
+        const languageChip = document.getElementById("languageChip");
+        const cityChip = document.getElementById("cityChip");
+        const timingChip = document.getElementById("timingChip");
+        const citySelect = document.getElementById("citySelect");
+        const showList = document.getElementById("showList");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+
+        const params = new URLSearchParams(window.location.search);
+        const movieId = params.get("movieId");
+        let activeCityId = params.get("cityId") || getSelectedCityId() || "";
+        let currentMovie = null;
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        function formatDuration(duration) {
+            if (!duration && duration !== 0) {
+                return "-";
+            }
+            return `${duration} min`;
+        }
+
+        function getShowLanguages(shows) {
+            return [...new Set((shows || []).map((show) => String(show.language || "").trim()).filter(Boolean))];
+        }
+
+        function formatShowTime(value) {
+            if (!value) {
+                return "Time unavailable";
+            }
+
+            return new Date(value).toLocaleString("en-IN", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
+        function renderMovie() {
+            if (!currentMovie) {
+                movieTitle.textContent = "Movie not found";
+                movieCopy.textContent = "The selected movie could not be loaded.";
+                genreChip.textContent = "Genre: -";
+                durationChip.textContent = "Duration: -";
+                languageChip.textContent = "Language: -";
+                cityChip.textContent = "City: Select city";
+                timingChip.textContent = "Timing: -";
+                return;
+            }
+
+            movieTitle.textContent = currentMovie.title || "Untitled movie";
+            movieCopy.textContent = "Choose a city and showtime, then continue to booking.";
+            genreChip.textContent = `Genre: ${currentMovie.genre || "N/A"}`;
+            durationChip.textContent = `Duration: ${formatDuration(currentMovie.duration)}`;
+            languageChip.textContent = "Language: Select city";
+            cityChip.textContent = `City: ${activeCityId ? "Loading city shows..." : "Select city"}`;
+            timingChip.textContent = "Timing: Select city";
+        }
+
+        function renderCities(cities) {
+            if (!cities || !cities.length) {
+                citySelect.innerHTML = '<option value="">No cities available</option>';
+                activeCityId = "";
+                setSelectedCity(null);
+                return;
+            }
+
+            const preferredCityId = String(activeCityId || "");
+            citySelect.innerHTML = `
+                <option value="">Select city</option>
+                ${cities.map((city) => `
+                    <option value="${city.id}" ${String(city.id) === preferredCityId ? "selected" : ""}>${escapeHtml(city.name)}</option>
+                `).join("")}
+            `;
+
+            if (preferredCityId && cities.some((city) => String(city.id) === preferredCityId)) {
+                citySelect.value = preferredCityId;
+            } else {
+                citySelect.value = "";
+            }
+
+            activeCityId = citySelect.value;
+            if (activeCityId) {
+                setSelectedCity({
+                    id: activeCityId,
+                    name: citySelect.selectedOptions[0]?.textContent || ""
+                });
+                cityChip.textContent = `City: ${citySelect.selectedOptions[0]?.textContent || "Selected city"}`;
+            } else {
+                setSelectedCity(null);
+                cityChip.textContent = "City: Select city";
+            }
+        }
+
+        function renderShows(shows) {
+            if (!shows || !shows.length) {
+                showList.innerHTML = activeCityId
+                    ? '<div class="empty-state">No shows available for this movie in the selected city.</div>'
+                    : '<div class="empty-state">Select a city to view theatre and timing details.</div>';
+                languageChip.textContent = "Language: Select city";
+                timingChip.textContent = activeCityId ? "Timing: Not available" : "Timing: Select city";
+                return;
+            }
+
+            const showLanguages = getShowLanguages(shows);
+            languageChip.textContent = `Language: ${showLanguages.length > 0 ? showLanguages.join(", ") : "N/A"}`;
+            timingChip.textContent = `Timing: ${formatShowTime(shows[0].showStart)}`;
+            cityChip.textContent = `City: ${citySelect.selectedOptions[0]?.textContent || "Selected city"}`;
+
+            showList.innerHTML = shows.map((show) => `
+                <article class="show-card">
+                    <div class="show-top">
+                        <strong>${escapeHtml(formatShowTime(show.showStart))}</strong>
+                        <span>${escapeHtml(show.language || "N/A")} | ${escapeHtml(show.format || "2D")}</span>
+                    </div>
+                    <div class="show-sub">${escapeHtml(citySelect.selectedOptions[0]?.textContent || "Selected city")} | ${escapeHtml(show.theatreName || "Theatre")} | ${escapeHtml(show.screenName || "Screen")}</div>
+                    <div class="button-row">
+                        <a class="button" href="booking.html?movieId=${encodeURIComponent(movieId)}&showId=${encodeURIComponent(show.id)}&cityId=${encodeURIComponent(activeCityId)}">Book Now</a>
+                    </div>
+                </article>
+            `).join("");
+        }
+
+        async function loadShows() {
+            if (!activeCityId || !movieId) {
+                renderShows([]);
+                return;
+            }
+
+            showStatus("Loading shows...", "info");
+            try {
+                const shows = await getMovieShows({ cityId: activeCityId, movieId });
+                renderShows(shows || []);
+                showStatus("Shows loaded.", "success");
+            } catch (error) {
+                showStatus(error.message || "Could not load shows.", "error");
+                renderShows([]);
+            }
+        }
+
+        async function loadPage() {
+            if (!movieId) {
+                showStatus("Movie ID is missing.", "error");
+                movieTitle.textContent = "Movie not found";
+                showList.innerHTML = '<div class="empty-state">Please open this page from a movie card.</div>';
+                return;
+            }
+
+            showStatus("Loading movie details...", "info");
+            try {
+                const [movies, cities] = await Promise.all([getMovies(), getCities()]);
+                currentMovie = (movies || []).find((movie) => String(movie.id) === String(movieId)) || null;
+                renderMovie();
+                renderCities(cities || []);
+                if (activeCityId) {
+                    await loadShows();
+                } else {
+                    renderShows([]);
+                    showStatus("Select a city to load theatre and timing details.", "info");
+                }
+            } catch (error) {
+                showStatus(error.message || "Could not load movie details.", "error");
+                console.error(error);
+            }
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const searchTerm = siteSearchInput.value.trim();
+            window.location.href = searchTerm ? `movies.html?search=${encodeURIComponent(searchTerm)}` : "movies.html";
+        });
+
+        citySelect.addEventListener("change", async function () {
+            activeCityId = citySelect.value;
+            if (activeCityId) {
+                setSelectedCity({
+                    id: activeCityId,
+                    name: citySelect.selectedOptions[0]?.textContent || ""
+                });
+                await loadShows();
+                return;
+            }
+
+            setSelectedCity(null);
+            renderShows([]);
+            showStatus("Select a city to load theatre and timing details.", "info");
+        });
+
+        document.addEventListener("DOMContentLoaded", loadPage);
+    </script>
+</body>
+</html>

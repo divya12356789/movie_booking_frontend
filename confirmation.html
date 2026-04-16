@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic | Confirmation</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .confirmation-shell {
+            display: grid;
+            gap: 24px;
+        }
+
+        .ticket-card,
+        .ticket-sidebar {
+            display: grid;
+            gap: 18px;
+            padding: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.96));
+            box-shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .ticket-badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(245, 158, 11, 0.14);
+            color: #fbbf24;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .ticket-title {
+            margin: 8px 0 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.04;
+            color: #ffffff;
+        }
+
+        .ticket-code {
+            color: #bfdbfe;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .ticket-info {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .ticket-info span {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .ticket-info strong {
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .ticket-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(37, 99, 235, 0.12);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .ticket-total span {
+            color: #bfdbfe;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .ticket-total strong {
+            color: #ffffff;
+            font-size: 1.8rem;
+        }
+
+        .sidebar-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .sidebar-item {
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .sidebar-item strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        @media (max-width: 960px) {
+            .ticket-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+            }
+
+            .top-nav,
+            .ticket-sidebar,
+            .no-print,
+            .status,
+            .button-row,
+            .button,
+            .header-actions,
+            .header-search {
+                display: none !important;
+            }
+
+            .panel,
+            .ticket-card {
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                color: #111827 !important;
+            }
+
+            .ticket-card * {
+                color: #111827 !important;
+            }
+
+            .print-only {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav no-print">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input id="siteSearchInput" name="search" type="search" placeholder="Search for movies by title, genre or ID">
+            </form>
+            <div class="header-actions">
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="booking.html">Booking</a>
+                    <a href="history.html">History</a>
+                </nav>
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <section class="panel confirmation-shell">
+            <div id="statusBox" class="status no-print" aria-live="polite"></div>
+
+            <div class="ticket-card" id="ticketCard">
+                <div class="ticket-header">
+                    <div>
+                        <div class="ticket-badge">Booking Confirmed</div>
+                        <h1 class="ticket-title">Your ticket is ready</h1>
+                        <div class="ticket-code">Booking ID: <span id="bookingCodeLabel">-</span></div>
+                    </div>
+                    <div class="ticket-total print-only">
+                        <span>Total Amount</span>
+                        <strong id="printTotalLabel">-</strong>
+                    </div>
+                </div>
+
+                <div class="ticket-grid">
+                    <div class="ticket-info"><span>Movie</span><strong id="movieLabel">-</strong></div>
+                    <div class="ticket-info"><span>Theatre</span><strong id="theatreLabel">-</strong></div>
+                    <div class="ticket-info"><span>Screen</span><strong id="screenLabel">-</strong></div>
+                    <div class="ticket-info"><span>Show Time</span><strong id="showLabel">-</strong></div>
+                    <div class="ticket-info"><span>Seats</span><strong id="seatsLabel">-</strong></div>
+                    <div class="ticket-info"><span>Booked On</span><strong id="bookedLabel">-</strong></div>
+                </div>
+
+                <div class="ticket-total">
+                    <span>Total Amount</span>
+                    <strong id="totalLabel">-</strong>
+                </div>
+
+                <p class="page-subtitle">Keep this confirmation for entry and future reference. You can download or print it as a simple ticket slip.</p>
+            </div>
+
+            <aside class="ticket-sidebar no-print">
+                <div>
+                    <h2 class="section-heading">Ticket Actions</h2>
+                    <p class="page-subtitle">Download the ticket or jump to your booking history.</p>
+                </div>
+
+                <div class="sidebar-list">
+                    <div class="sidebar-item">
+                        <strong>Download Ticket</strong>
+                        Print this page to save a basic HTML/PDF version of the ticket.
+                    </div>
+                    <div class="sidebar-item">
+                        <strong>Reference</strong>
+                        Use the booking ID above if you need to look up this booking later.
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button id="downloadButton" class="button" type="button">Download Ticket</button>
+                    <a class="button secondary" href="history.html">View Booking History</a>
+                </div>
+            </aside>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const LAST_BOOKING_KEY = "movieBookingLastBooking";
+        const statusBox = document.getElementById("statusBox");
+        const ticketCard = document.getElementById("ticketCard");
+        const downloadButton = document.getElementById("downloadButton");
+        const bookingCodeLabel = document.getElementById("bookingCodeLabel");
+        const movieLabel = document.getElementById("movieLabel");
+        const theatreLabel = document.getElementById("theatreLabel");
+        const screenLabel = document.getElementById("screenLabel");
+        const showLabel = document.getElementById("showLabel");
+        const seatsLabel = document.getElementById("seatsLabel");
+        const totalLabel = document.getElementById("totalLabel");
+        const printTotalLabel = document.getElementById("printTotalLabel");
+        const bookedLabel = document.getElementById("bookedLabel");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        function formatPrice(value) {
+            return new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0
+            }).format(Number(value || 0));
+        }
+
+        function formatShowTime(value) {
+            if (!value) {
+                return "-";
+            }
+
+            return new Date(value).toLocaleString("en-IN", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function loadBooking() {
+            const bookingId = new URLSearchParams(window.location.search).get("bookingId");
+            const stored = sessionStorage.getItem(LAST_BOOKING_KEY);
+
+            if (stored) {
+                try {
+                    const booking = JSON.parse(stored);
+                    if (!bookingId || String(booking.id) === String(bookingId)) {
+                        renderBooking(booking);
+                        return;
+                    }
+                } catch (error) {
+                    console.warn("Stored booking data could not be parsed.", error);
+                }
+            }
+
+            if (!bookingId) {
+                window.location.href = "booking.html";
+                return;
+            }
+
+            getBookingById(bookingId)
+                .then(renderBooking)
+                .catch((error) => {
+                    showStatus(error.message || "Unable to load booking confirmation.", "error");
+                    console.error(error);
+                });
+        }
+
+        function renderBooking(booking) {
+            if (!booking) {
+                window.location.href = "booking.html";
+                return;
+            }
+
+            bookingCodeLabel.textContent = booking.bookingCode || booking.id || "-";
+            movieLabel.textContent = booking.movieTitle || "-";
+            theatreLabel.textContent = booking.theatreName || "-";
+            screenLabel.textContent = booking.screenName || "-";
+            showLabel.textContent = formatShowTime(booking.showStart);
+            seatsLabel.textContent = Array.isArray(booking.seatNumbers) ? booking.seatNumbers.join(", ") : (booking.seatNumber || "-");
+            totalLabel.textContent = formatPrice(booking.totalAmount);
+            printTotalLabel.textContent = formatPrice(booking.totalAmount);
+            bookedLabel.textContent = booking.bookingTime ? new Date(booking.bookingTime).toLocaleString("en-IN") : "-";
+            showStatus("Booking confirmed successfully.", "success");
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const searchTerm = siteSearchInput.value.trim();
+            window.location.href = searchTerm ? `index.html?search=${encodeURIComponent(searchTerm)}` : "index.html";
+        });
+
+        downloadButton.addEventListener("click", function () {
+            window.print();
+        });
+
+        document.addEventListener("DOMContentLoaded", loadBooking);
+    </script>
+</body>
+</html>

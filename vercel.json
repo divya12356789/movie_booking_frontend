@@ -1,0 +1,14 @@
+{
+	"routes": [
+		{ "src": "/", "dest": "/index.html" },
+		{ "src": "/booking", "dest": "/booking.html" },
+		{ "src": "/movies", "dest": "/movies.html" },
+		{ "src": "/movie-details", "dest": "/movie-details.html" },
+		{ "src": "/payment", "dest": "/payment.html" },
+		{ "src": "/confirmation", "dest": "/confirmation.html" },
+		{ "src": "/login", "dest": "/login.html" },
+		{ "src": "/register", "dest": "/register.html" },
+		{ "src": "/edit-profile", "dest": "/edit-profile.html" },
+		{ "src": "/history", "dest": "/history.html" }
+	]
+}

@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic | Movies</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .movie-section {
+            display: grid;
+            gap: 18px;
+        }
+
+        .movie-section + .movie-section {
+            margin-top: 36px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(148, 163, 184, 0.14);
+        }
+
+        .landing-layout {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .filter-sidebar {
+            display: grid;
+            gap: 18px;
+        }
+
+        .filter-panel {
+            display: grid;
+            gap: 14px;
+        }
+
+        .filter-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .filter-subtitle {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.93rem;
+            line-height: 1.6;
+        }
+
+        .filter-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+        }
+
+        .filter-option:hover {
+            transform: translateY(-1px);
+            border-color: rgba(245, 158, 11, 0.22);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .filter-option.active {
+            border-color: rgba(245, 158, 11, 0.38);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(15, 23, 42, 0.92));
+            box-shadow: 0 16px 32px rgba(245, 158, 11, 0.16);
+        }
+
+        .landing-main {
+            display: grid;
+            gap: 18px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .section-kicker {
+            margin: 0 0 8px;
+            color: #f59e0b;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.8rem, 3vw, 2.7rem);
+            line-height: 1.05;
+            color: #ffffff;
+        }
+
+        .section-meta {
+            color: #94a3b8;
+            font-size: 0.96rem;
+            font-weight: 600;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .section-kicker {
+            margin: 0 0 8px;
+            color: #f59e0b;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.8rem, 3vw, 2.7rem);
+            line-height: 1.05;
+            color: #ffffff;
+        }
+
+        .movie-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .movie-card {
+            padding: 0;
+            overflow: hidden;
+            gap: 0;
+            cursor: pointer;
+        }
+
+        .recommended-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .recommended-card {
+            display: grid;
+            grid-template-columns: minmax(120px, 168px) minmax(0, 1fr);
+            min-height: 240px;
+            overflow: hidden;
+            border: 1px solid rgba(251, 113, 133, 0.18);
+            border-radius: 24px;
+            background:
+                radial-gradient(circle at top right, rgba(251, 113, 133, 0.18), transparent 36%),
+                linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.96));
+            box-shadow: 0 24px 60px rgba(2, 6, 23, 0.36);
+            cursor: pointer;
+        }
+
+        .recommended-poster {
+            width: 100%;
+            height: 100%;
+            min-height: 240px;
+            object-fit: cover;
+            display: block;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .recommended-content {
+            display: grid;
+            gap: 14px;
+            padding: 22px;
+        }
+
+        .recommended-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .recommended-badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(251, 113, 133, 0.16);
+            color: #fda4af;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .recommended-rank {
+            color: #f8fafc;
+            font-size: 0.96rem;
+            font-weight: 800;
+        }
+
+        .recommended-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.5rem, 2.4vw, 2rem);
+            line-height: 1.05;
+            color: #ffffff;
+        }
+
+        .recommended-copy {
+            margin: 0;
+            color: #cbd5e1;
+            font-size: 0.96rem;
+            line-height: 1.7;
+        }
+
+        .recommended-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .recommended-meta span {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+            font-size: 0.84rem;
+            font-weight: 700;
+        }
+
+        .recommended-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .recommended-note {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            display: block;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .movie-card-content {
+            display: grid;
+            gap: 10px;
+            padding: 18px;
+        }
+
+        .movie-header {
+            display: grid;
+            gap: 8px;
+        }
+
+        .movie-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .movie-badge {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .movie-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .movie-stats strong {
+            color: #f59e0b;
+        }
+
+        .movie-footer {
+            margin-top: 8px;
+        }
+
+        .coming-soon-countdown {
+            color: #f8fafc;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .coming-soon-countdown strong {
+            color: #f59e0b;
+        }
+
+        @media (max-width: 960px) {
+            .recommended-card {
+                grid-template-columns: 1fr;
+            }
+
+            .recommended-poster {
+                min-height: 220px;
+                aspect-ratio: 16 / 10;
+            }
+
+            .movie-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .movie-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input
+                    id="siteSearchInput"
+                    name="search"
+                    type="search"
+                    placeholder="Search for movies by title, genre or ID"
+                >
+            </form>
+            <div class="header-actions">
+                <div class="header-select">
+                    <label class="sr-only" for="citySelect">Select city</label>
+                    <select id="citySelect" name="city">
+                        <option value="">Loading city catalog...</option>
+                    </select>
+                </div>
+                <nav class="nav-links">
+                    <a class="active" href="movies.html">Movies</a>
+                </nav>
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <div class="landing-layout">
+            <aside class="filter-sidebar">
+                <section class="panel filter-panel">
+                    <div>
+                        <h2 class="filter-title">Genre</h2>
+                        <p class="filter-subtitle">Filter movies by genre to narrow the city lineup.</p>
+                    </div>
+                    <div id="genreFilters" class="filter-list"></div>
+                </section>
+
+                <section class="panel filter-panel">
+                    <div>
+                        <h2 class="filter-title">Language</h2>
+                        <p class="filter-subtitle">Language filters are derived from available movie data.</p>
+                    </div>
+                    <div id="languageFilters" class="filter-list"></div>
+                </section>
+
+                <div class="helper-panel">
+                    <strong>Quick Tip</strong>
+                    <span>Pick a city to switch from global recommendations to live city-specific movies.</span>
+                </div>
+            </aside>
+
+            <main class="landing-main">
+                <section class="panel movie-section">
+                    <div class="section-header">
+                        <div>
+                            <p class="section-kicker">Recommended</p>
+                            <h1 class="section-title">Recommended Movies</h1>
+                        </div>
+                        <div id="recommendedMeta" class="section-meta">General recommendations</div>
+                    </div>
+                    <p class="page-subtitle">Quick picks that work both as global recommendations and city-specific suggestions.</p>
+                    <div id="recommendedList" class="recommended-grid"></div>
+                </section>
+
+                <section class="panel movie-section">
+                    <div class="section-header">
+                        <div>
+                            <p class="section-kicker">Now Showing</p>
+                            <h2 class="section-title">Browse Movies</h2>
+                        </div>
+                        <div id="movieSectionMeta" class="section-meta">Live from backend</div>
+                    </div>
+                    <p class="page-subtitle">Browse the current movie list and jump directly to booking.</p>
+                    <div id="statusBox" class="status" aria-live="polite"></div>
+                    <div id="movieList" class="movie-grid"></div>
+                </section>
+
+                <section class="panel movie-section">
+                    <div class="section-header">
+                        <div>
+                            <p class="section-kicker">Coming Soon</p>
+                            <h2 class="section-title">Upcoming Releases</h2>
+                        </div>
+                        <div id="comingSoonMeta" class="section-meta">Static showcase</div>
+                    </div>
+                    <p class="page-subtitle">A preview of upcoming releases landing soon in the cinema lineup.</p>
+                    <div id="comingSoonList" class="movie-grid"></div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const recommendedList = document.getElementById("recommendedList");
+        const recommendedMeta = document.getElementById("recommendedMeta");
+        const movieList = document.getElementById("movieList");
+        const comingSoonList = document.getElementById("comingSoonList");
+        const comingSoonMeta = document.getElementById("comingSoonMeta");
+        const movieSectionMeta = document.getElementById("movieSectionMeta");
+        const statusBox = document.getElementById("statusBox");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+        const citySelect = document.getElementById("citySelect");
+        const genreFilters = document.getElementById("genreFilters");
+        const languageFilters = document.getElementById("languageFilters");
+        const initialSearchTerm = new URLSearchParams(window.location.search).get("search") || "";
+        const comingSoonMovies = [
+            { title: "Midnight Velocity", genre: "Action", duration: 134, releaseDate: "2026-05-02" },
+            { title: "Starlit Promise", genre: "Romance", duration: 126, releaseDate: "2026-05-16" },
+            { title: "Ashes of Eden", genre: "Fantasy", duration: 148, releaseDate: "2026-06-05" },
+            { title: "Signal Lost", genre: "Sci-Fi", duration: 138, releaseDate: "2026-06-19" },
+            { title: "The Last Lantern", genre: "Adventure", duration: 131, releaseDate: "2026-07-03" },
+            { title: "Veil of the Hollow", genre: "Thriller", duration: 119, releaseDate: "2026-07-17" }
+        ];
+        let movieCache = [];
+        let activeSearchTerm = initialSearchTerm;
+        let activeCityId = new URLSearchParams(window.location.search).get("cityId") || getSelectedCityId() || "";
+        let activeGenre = new URLSearchParams(window.location.search).get("genre") || "All";
+        let activeLanguage = new URLSearchParams(window.location.search).get("language") || "All";
+        const recommendationLabels = ["Top Pick", "Trending Choice", "Fan Favorite", "Weekend Watch"];
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        function syncHeaderState() {
+            // Profile actions are handled by the shared profile dropdown.
+        }
+
+        function showBrowseHintIfNeeded() {
+            if (!isAuthenticated()) {
+                showStatus("Search movies freely. Login when you are ready to book tickets.", "info");
+            }
+        }
+
+        function clearStatus() {
+            statusBox.textContent = "";
+            statusBox.className = "status";
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
+        function formatDuration(duration) {
+            if (duration === undefined || duration === null || duration === "") {
+                return "Duration not set";
+            }
+            return `${duration} min`;
+        }
+
+        function getMovieLanguages(movie) {
+            if (Array.isArray(movie?.languages) && movie.languages.length > 0) {
+                return movie.languages
+                    .map((language) => String(language).trim())
+                    .filter((language) => language && language.toUpperCase() !== "N/A");
+            }
+
+            if (movie?.language) {
+                const normalizedLanguage = String(movie.language).trim();
+                if (normalizedLanguage && normalizedLanguage.toUpperCase() !== "N/A") {
+                    return [normalizedLanguage];
+                }
+            }
+
+            return [];
+        }
+
+        function getMovieDetailsUrl(movieId) {
+            const selectedCityId = activeCityId || getSelectedCityId();
+            const cityQuery = selectedCityId ? `&cityId=${encodeURIComponent(selectedCityId)}` : "";
+            return `movie-details.html?movieId=${encodeURIComponent(movieId)}${cityQuery}`;
+        }
+
+        function getRecommendedMovies(movies, limit = 3) {
+            return [...(movies || [])].slice(0, limit);
+        }
+
+        function getRecommendationCopy(movie, index) {
+            const title = movie?.title || "This movie";
+            const genre = movie?.genre || "cinema";
+            const descriptions = [
+                `${title} brings a strong ${genre.toLowerCase()} vibe and is a great first pick for your watchlist.`,
+                `A solid ${genre.toLowerCase()} option if you want something crowd-friendly and easy to jump into.`,
+                `One of the standout ${genre.toLowerCase()} picks in the current lineup for a fun theatre watch.`,
+                `${title} is worth a look if you want a fresh addition from today's movie selection.`
+            ];
+
+            return descriptions[index % descriptions.length];
+        }
+
+        function normalizeSearchTerm(value) {
+            return String(value || "").trim().toLowerCase();
+        }
+
+        function filterMoviesBySearch(movies, searchTerm) {
+            const normalizedSearchTerm = normalizeSearchTerm(searchTerm);
+            if (!normalizedSearchTerm) {
+                return [...(movies || [])];
+            }
+
+            return (movies || []).filter((movie) =>
+                [movie.title, movie.genre, movie.id, ...getMovieLanguages(movie)]
+                    .some((fieldValue) => String(fieldValue || "").toLowerCase().includes(normalizedSearchTerm))
+            );
+        }
+
+        function getGenreOptions() {
+            return [...new Set(movieCache.map((movie) => String(movie.genre || "").trim()).filter(Boolean))].sort((left, right) =>
+                left.localeCompare(right)
+            );
+        }
+
+        function getLanguageOptions() {
+            return [...new Set(movieCache.flatMap((movie) => getMovieLanguages(movie)))].sort((left, right) =>
+                left.localeCompare(right)
+            );
+        }
+
+        function filterMovies(options = {}) {
+            const searchTerm = String(options.searchTerm ?? activeSearchTerm).trim().toLowerCase();
+            const genre = options.genre ?? activeGenre;
+            const language = options.language ?? activeLanguage;
+
+            return movieCache.filter((movie) => {
+                const matchesSearch = !searchTerm || [movie.title, movie.genre, movie.id, ...getMovieLanguages(movie)]
+                    .some((value) => String(value || "").toLowerCase().includes(searchTerm));
+                const matchesGenre = genre === "All" || String(movie.genre || "Other") === genre;
+                const matchesLanguage = language === "All" || getMovieLanguages(movie).includes(language);
+
+                return matchesSearch && matchesGenre && matchesLanguage;
+            });
+        }
+
+        function renderFilterButtons(container, filterType, options, activeValue) {
+            container.innerHTML = options.map((option) => `
+                <button
+                    type="button"
+                    class="filter-option ${option === activeValue ? "active" : ""}"
+                    data-filter-type="${filterType}"
+                    data-filter-value="${escapeHtml(option)}"
+                >
+                    <span>${escapeHtml(option)}</span>
+                </button>
+            `).join("");
+        }
+
+        function renderFilters() {
+            const genreOptions = getGenreOptions();
+            const languageOptions = getLanguageOptions();
+
+            if (!genreOptions.includes(activeGenre)) {
+                activeGenre = "All";
+            }
+
+            if (!languageOptions.includes(activeLanguage)) {
+                activeLanguage = "All";
+            }
+
+            renderFilterButtons(genreFilters, "genre", ["All", ...genreOptions], activeGenre);
+            renderFilterButtons(languageFilters, "language", ["All", ...languageOptions], activeLanguage);
+        }
+
+        function syncSearchUrl(searchTerm) {
+            const params = new URLSearchParams(window.location.search);
+            if (searchTerm) {
+                params.set("search", searchTerm);
+            } else {
+                params.delete("search");
+            }
+
+            if (activeCityId) {
+                params.set("cityId", activeCityId);
+            } else {
+                params.delete("cityId");
+            }
+
+            if (activeGenre !== "All") {
+                params.set("genre", activeGenre);
+            } else {
+                params.delete("genre");
+            }
+
+            if (activeLanguage !== "All") {
+                params.set("language", activeLanguage);
+            } else {
+                params.delete("language");
+            }
+
+            const queryString = params.toString();
+            const nextUrl = queryString
+                ? `${window.location.pathname}?${queryString}`
+                : window.location.pathname;
+
+            window.history.replaceState({}, "", nextUrl);
+        }
+
+        function syncSelectedCity() {
+            const selectedOption = citySelect.selectedOptions[0];
+            if (!selectedOption || !selectedOption.value) {
+                setSelectedCity(null);
+                return;
+            }
+
+            setSelectedCity({
+                id: selectedOption.value,
+                name: selectedOption.textContent
+            });
+        }
+
+        function renderCityOptions(cities) {
+            if (!cities || cities.length === 0) {
+                citySelect.innerHTML = '<option value="">No cities available</option>';
+                activeCityId = "";
+                setSelectedCity(null);
+                return;
+            }
+
+            const preferredCityId = String(activeCityId || "");
+            citySelect.innerHTML = `
+                <option value="">Select city</option>
+                ${cities.map((city) => `
+                    <option value="${escapeHtml(city.id)}" ${String(city.id) === preferredCityId ? "selected" : ""}>
+                        ${escapeHtml(city.name)}
+                    </option>
+                `).join("")}
+            `;
+
+            if (preferredCityId && cities.some((city) => String(city.id) === preferredCityId)) {
+                citySelect.value = preferredCityId;
+            } else {
+                citySelect.value = "";
+            }
+
+            activeCityId = citySelect.value;
+            syncSelectedCity();
+        }
+
+        function getStaticRating(index) {
+            const ratings = ["8.7", "8.3", "7.9", "8.5", "8.1", "8.9"];
+            return ratings[index % ratings.length];
+        }
+
+        function createPlaceholderPoster(movie, label = "NOW SHOWING") {
+            const title = String(movie.title || "Now Showing").slice(0, 26);
+            const genre = String(movie.genre || "Cinema");
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+                    <defs>
+                        <linearGradient id="posterGradient" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#0f172a" />
+                            <stop offset="55%" stop-color="#1e293b" />
+                            <stop offset="100%" stop-color="#020617" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="600" height="800" fill="url(#posterGradient)" />
+                    <circle cx="480" cy="120" r="130" fill="rgba(245,158,11,0.18)" />
+                    <rect x="42" y="42" width="516" height="716" rx="24" fill="none" stroke="rgba(245,158,11,0.28)" stroke-width="3" />
+                    <text x="56" y="122" fill="#f59e0b" font-size="34" font-family="Segoe UI, Arial, sans-serif" font-weight="700">${escapeHtml(label)}</text>
+                    <text x="56" y="530" fill="#ffffff" font-size="64" font-family="Georgia, serif" font-weight="700">${escapeHtml(title)}</text>
+                    <text x="56" y="596" fill="#cbd5e1" font-size="30" font-family="Segoe UI, Arial, sans-serif">${escapeHtml(genre)}</text>
+                </svg>
+            `;
+
+            return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+        }
+
+        function getPosterImage(movie) {
+            const poster = movie.posterUrl || movie.poster || movie.imageUrl || movie.image;
+            return poster ? String(poster) : createPlaceholderPoster(movie);
+        }
+
+        function formatReleaseDate(releaseDate) {
+            const date = new Date(`${releaseDate}T00:00:00`);
+            return date.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            });
+        }
+
+        function getDaysLeft(releaseDate) {
+            const release = new Date(`${releaseDate}T00:00:00`);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const millisecondsPerDay = 1000 * 60 * 60 * 24;
+            return Math.ceil((release - today) / millisecondsPerDay);
+        }
+
+        function formatCountdown(daysLeft) {
+            if (daysLeft < 0) {
+                return "Now released";
+            }
+
+            if (daysLeft === 0) {
+                return "Releases today";
+            }
+
+            if (daysLeft === 1) {
+                return "1 day left";
+            }
+
+            return `${daysLeft} days left`;
+        }
+
+        function renderRecommendedMovies(movies, options = {}) {
+            const totalCount = options.totalCount ?? (movies ? movies.length : 0);
+            const searchTerm = String(options.searchTerm || "").trim();
+            const hasSelectedCity = Boolean(activeCityId);
+            if (!movies || movies.length === 0) {
+                recommendedMeta.textContent = searchTerm
+                    ? `0 picks for "${searchTerm}"`
+                    : "Recommendations will appear here";
+                recommendedList.innerHTML = searchTerm
+                    ? `<div class="empty-state">No recommended movies matched "${escapeHtml(searchTerm)}".</div>`
+                    : hasSelectedCity
+                        ? '<div class="empty-state">No recommended movies are available in the selected city.</div>'
+                        : '<div class="empty-state">Recommended movies will appear here when live data is available.</div>';
+                return;
+            }
+
+            recommendedMeta.textContent = searchTerm
+                ? `${movies.length} picks for "${searchTerm}"`
+                : hasSelectedCity
+                    ? `${movies.length} live picks from the selected city`
+                    : `${movies.length} handpicked from ${totalCount} live movies`;
+
+            recommendedList.innerHTML = movies.map((movie, index) => `
+                <article class="recommended-card" data-details-url="${getMovieDetailsUrl(movie.id)}" role="link" tabindex="0" aria-label="Open details for ${escapeHtml(movie.title || "Untitled Movie")}">
+                    <img
+                        class="recommended-poster"
+                        src="${getPosterImage(movie)}"
+                        alt="${escapeHtml(movie.title || "Recommended movie poster")}"
+                        loading="lazy"
+                    >
+                    <div class="recommended-content">
+                        <div class="recommended-head">
+                            <span class="recommended-badge">${recommendationLabels[index % recommendationLabels.length]}</span>
+                            <span class="recommended-rank">#${index + 1}</span>
+                        </div>
+                        <div>
+                            <h3 class="recommended-title">${escapeHtml(movie.title || "Untitled Movie")}</h3>
+                        </div>
+                        <p class="recommended-copy">${escapeHtml(getRecommendationCopy(movie, index))}</p>
+                        <div class="recommended-meta">
+                            <span>${escapeHtml(movie.genre || "Featured")}</span>
+                            <span>${escapeHtml(formatDuration(movie.duration))}</span>
+                            <span>Movie ID ${escapeHtml(movie.id)}</span>
+                        </div>
+                        <div class="recommended-actions">
+                            <a class="button" href="${getMovieDetailsUrl(movie.id)}">View Details</a>
+                            <span class="recommended-note">Fast pick for tonight's plan.</span>
+                        </div>
+                    </div>
+                </article>
+            `).join("");
+        }
+
+        function renderMovies(movies, options = {}) {
+            const totalCount = options.totalCount ?? (movies ? movies.length : 0);
+            const searchTerm = String(options.searchTerm || "").trim();
+            const hasSelectedCity = Boolean(activeCityId);
+            if (!movies || movies.length === 0) {
+                movieSectionMeta.textContent = searchTerm
+                    ? `0 of ${totalCount} movies matched`
+                    : hasSelectedCity
+                        ? "No movies in selected city"
+                        : "Live from backend";
+                movieList.innerHTML = searchTerm
+                    ? `<div class="empty-state">No movies matched "${escapeHtml(searchTerm)}".</div>`
+                    : hasSelectedCity
+                        ? '<div class="empty-state">No movies are available in the selected city.</div>'
+                        : '<div class="empty-state">No movies available yet.</div>';
+
+                if (searchTerm) {
+                    statusBox.className = "status";
+                    statusBox.textContent = "";
+                    showBrowseHintIfNeeded();
+                } else {
+                    showStatus("No movies were found in the database.", "info");
+                }
+
+                return;
+            }
+
+            statusBox.className = "status";
+            statusBox.textContent = "";
+            movieSectionMeta.textContent = searchTerm
+                ? `${movies.length} of ${totalCount} movies matched`
+                : hasSelectedCity
+                    ? `${movies.length} movies in the selected city`
+                    : `${movies.length} live from backend`;
+
+            movieList.innerHTML = movies.map((movie, index) => `
+                <article class="movie-card" data-details-url="${getMovieDetailsUrl(movie.id)}" role="link" tabindex="0" aria-label="Open details for ${escapeHtml(movie.title || "Untitled Movie")}">
+                    <img
+                        class="movie-poster"
+                        src="${getPosterImage(movie)}"
+                        alt="${escapeHtml(movie.title || "Movie poster")}"
+                        loading="lazy"
+                    >
+                    <div class="movie-card-content">
+                        <div class="movie-header">
+                            <div class="movie-badges">
+                                <span class="movie-badge">${escapeHtml(movie.genre || "Featured")}</span>
+                                <span class="movie-badge">Rating ${getStaticRating(index)}</span>
+                            </div>
+                            <h2 class="movie-title">${escapeHtml(movie.title || "Untitled Movie")}</h2>
+                        </div>
+                        <div class="movie-stats">
+                            <span><strong>Genre</strong> ${escapeHtml(movie.genre || "N/A")}</span>
+                            <span><strong>Duration</strong> ${escapeHtml(formatDuration(movie.duration))}</span>
+                            <span><strong>Rating</strong> ${getStaticRating(index)}</span>
+                        </div>
+                        <div class="movie-meta">Movie ID: ${escapeHtml(movie.id)}</div>
+                        <div class="movie-footer button-row">
+                            <a class="button" href="${getMovieDetailsUrl(movie.id)}">View Details</a>
+                        </div>
+                    </div>
+                </article>
+            `).join("");
+
+            showBrowseHintIfNeeded();
+        }
+
+        function renderComingSoonMovies(movies = comingSoonMovies, options = {}) {
+            const totalCount = options.totalCount ?? comingSoonMovies.length;
+            const searchTerm = String(options.searchTerm || "").trim();
+
+            comingSoonMeta.textContent = searchTerm
+                ? `${movies.length} of ${totalCount} upcoming matches`
+                : `${comingSoonMovies.length} upcoming movies`;
+
+            if (!movies || movies.length === 0) {
+                comingSoonList.innerHTML = searchTerm
+                    ? '<div class="empty-state">No upcoming releases matched this search.</div>'
+                    : '<div class="empty-state">No upcoming releases to show right now.</div>';
+                return;
+            }
+
+            comingSoonList.innerHTML = movies.map((movie) => {
+                const daysLeft = getDaysLeft(movie.releaseDate);
+                const countdownLabel = formatCountdown(daysLeft);
+
+                return `
+                    <article class="movie-card">
+                        <img
+                            class="movie-poster"
+                            src="${createPlaceholderPoster(movie, "COMING SOON")}"
+                            alt="${escapeHtml(movie.title)} coming soon poster"
+                            loading="lazy"
+                        >
+                        <div class="movie-card-content">
+                            <div class="movie-header">
+                                <div class="movie-badges">
+                                    <span class="movie-badge">${escapeHtml(movie.genre)}</span>
+                                    <span class="movie-badge">${escapeHtml(countdownLabel)}</span>
+                                </div>
+                                <h2 class="movie-title">${escapeHtml(movie.title)}</h2>
+                            </div>
+                            <div class="movie-stats">
+                                <span><strong>Genre</strong> ${escapeHtml(movie.genre)}</span>
+                                <span><strong>Duration</strong> ${escapeHtml(formatDuration(movie.duration))}</span>
+                                <span><strong>Release</strong> ${escapeHtml(formatReleaseDate(movie.releaseDate))}</span>
+                            </div>
+                            <div class="coming-soon-countdown"><strong>Countdown</strong> ${escapeHtml(countdownLabel)}</div>
+                            <div class="movie-footer button-row">
+                                <span class="button secondary">Coming Soon</span>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        function applyMovieSearch(searchTerm) {
+            activeSearchTerm = String(searchTerm || "").trim();
+            siteSearchInput.value = activeSearchTerm;
+            syncSearchUrl(activeSearchTerm);
+            renderFilters();
+
+            const filteredMovies = filterMovies();
+            const recommendedMovies = getRecommendedMovies(filteredMovies);
+            const filteredComingSoonMovies = filterMoviesBySearch(comingSoonMovies, activeSearchTerm);
+
+            renderRecommendedMovies(recommendedMovies, {
+                totalCount: movieCache.length,
+                searchTerm: activeSearchTerm
+            });
+            renderMovies(filteredMovies, {
+                totalCount: movieCache.length,
+                searchTerm: activeSearchTerm
+            });
+            renderComingSoonMovies(filteredComingSoonMovies, {
+                totalCount: comingSoonMovies.length,
+                searchTerm: activeSearchTerm
+            });
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            applyMovieSearch(siteSearchInput.value);
+        });
+
+        siteSearchInput.addEventListener("input", function () {
+            applyMovieSearch(siteSearchInput.value);
+        });
+
+        genreFilters.addEventListener("click", function (event) {
+            const button = event.target.closest("[data-filter-type='genre']");
+            if (!button) {
+                return;
+            }
+
+            activeGenre = button.dataset.filterValue || "All";
+            applyMovieSearch(activeSearchTerm);
+        });
+
+        languageFilters.addEventListener("click", function (event) {
+            const button = event.target.closest("[data-filter-type='language']");
+            if (!button) {
+                return;
+            }
+
+            activeLanguage = button.dataset.filterValue || "All";
+            applyMovieSearch(activeSearchTerm);
+        });
+
+        function handleCardNavigation(event, selector) {
+            const card = event.target.closest(selector);
+            if (!card) {
+                return;
+            }
+
+            const detailsUrl = card.dataset.detailsUrl;
+            if (!detailsUrl) {
+                return;
+            }
+
+            if (event.target.closest("a, button, input, select, textarea, label")) {
+                return;
+            }
+
+            window.location.href = detailsUrl;
+        }
+
+        recommendedList.addEventListener("click", function (event) {
+            handleCardNavigation(event, ".recommended-card");
+        });
+
+        movieList.addEventListener("click", function (event) {
+            handleCardNavigation(event, ".movie-card");
+        });
+
+        function handleCardKeyboardNavigation(event, selector) {
+            if (event.key !== "Enter" && event.key !== " ") {
+                return;
+            }
+
+            const card = event.target.closest(selector);
+            if (!card) {
+                return;
+            }
+
+            event.preventDefault();
+            const detailsUrl = card.dataset.detailsUrl;
+            if (detailsUrl) {
+                window.location.href = detailsUrl;
+            }
+        }
+
+        recommendedList.addEventListener("keydown", function (event) {
+            handleCardKeyboardNavigation(event, ".recommended-card");
+        });
+
+        movieList.addEventListener("keydown", function (event) {
+            handleCardKeyboardNavigation(event, ".movie-card");
+        });
+
+        async function loadGeneralMovies() {
+            showStatus("Loading recommendations...", "info");
+            recommendedMeta.textContent = "General recommendations";
+            movieSectionMeta.textContent = "Live from backend";
+
+            try {
+                const movies = await getMovies();
+                movieCache = movies || [];
+                renderFilters();
+                applyMovieSearch(activeSearchTerm);
+                clearStatus();
+            } catch (error) {
+                recommendedMeta.textContent = "Recommendations unavailable";
+                recommendedList.innerHTML = '<div class="empty-state">Recommended movies are unavailable right now.</div>';
+                movieList.innerHTML = '<div class="empty-state">Unable to load movies right now.</div>';
+                if ((error.message || "").toLowerCase().includes("login")) {
+                    clearSessionStorage();
+                    showStatus("Session expired. Redirecting to login...", "error");
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 900);
+                    return;
+                }
+
+                showStatus("Could not load movies. Make sure the backend is running on port 8080.", "error");
+                console.error(error);
+            }
+        }
+
+        async function loadCityMovies() {
+            if (!activeCityId) {
+                await loadGeneralMovies();
+                return;
+            }
+
+            showStatus("Loading city movies...", "info");
+
+            try {
+                const [cityMovies, cityShows] = await Promise.all([
+                    getMoviesByCity(activeCityId),
+                    getMovieShows({ cityId: activeCityId })
+                ]);
+
+                const availableMovieIds = new Set((cityShows || []).map((show) => String(show.movieId)));
+                movieCache = (cityMovies || []).filter((movie) => availableMovieIds.has(String(movie.id)));
+                renderFilters();
+                applyMovieSearch(activeSearchTerm);
+                clearStatus();
+            } catch (error) {
+                movieCache = [];
+                recommendedList.innerHTML = '<div class="empty-state">Recommended movies are unavailable right now.</div>';
+                movieList.innerHTML = '<div class="empty-state">Unable to load city movies right now.</div>';
+                showStatus(error.message || "Could not load city movies.", "error");
+                console.error(error);
+            }
+        }
+
+        async function loadMovies() {
+            try {
+                const cities = await getCities();
+                renderCityOptions(cities || []);
+
+                if (activeCityId) {
+                    await loadCityMovies();
+                    return;
+                }
+
+                await loadGeneralMovies();
+            } catch (error) {
+                recommendedMeta.textContent = "Recommendations unavailable";
+                recommendedList.innerHTML = '<div class="empty-state">Recommended movies are unavailable right now.</div>';
+                movieList.innerHTML = '<div class="empty-state">Unable to load movies right now.</div>';
+                showStatus("Could not load the movie catalog. Make sure the backend is running on port 8080.", "error");
+                console.error(error);
+            }
+        }
+
+        citySelect.addEventListener("change", async function () {
+            activeCityId = citySelect.value;
+            activeGenre = "All";
+            activeLanguage = "All";
+            syncSelectedCity();
+            syncSearchUrl(activeSearchTerm);
+
+            if (activeCityId) {
+                await loadCityMovies();
+                return;
+            }
+
+            await loadGeneralMovies();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            syncHeaderState();
+            siteSearchInput.value = activeSearchTerm;
+            renderComingSoonMovies(filterMoviesBySearch(comingSoonMovies, activeSearchTerm), {
+                totalCount: comingSoonMovies.length,
+                searchTerm: activeSearchTerm
+            });
+            loadMovies();
+        });
+    </script>
+</body>
+</html>

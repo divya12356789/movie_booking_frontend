@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemagic | Booking History</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .history-layout {
+            display: grid;
+            gap: 20px;
+        }
+
+        .history-header,
+        .history-list,
+        .history-empty {
+            padding: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.96));
+            box-shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
+        }
+
+        .history-title {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            color: #ffffff;
+        }
+
+        .history-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .history-card {
+            display: grid;
+            gap: 14px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .history-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: start;
+        }
+
+        .history-code {
+            color: #bfdbfe;
+            font-weight: 800;
+        }
+
+        .history-meta {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .history-item {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .history-item span {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .history-empty {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-nav">
+            <a class="brand" href="index.html" aria-label="Cinemagic home">
+                <span class="brand-word">cine</span>
+                <span class="brand-accent">magic</span>
+            </a>
+            <form id="siteSearchForm" class="header-search" role="search">
+                <label class="sr-only" for="siteSearchInput">Search movies</label>
+                <input id="siteSearchInput" name="search" type="search" placeholder="Search for movies by title, genre or ID">
+            </form>
+            <div class="header-actions">
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="booking.html">Booking</a>
+                    <a class="active" href="history.html">History</a>
+                </nav>
+                <a class="button header-login-button" href="login.html">Login</a>
+            </div>
+        </header>
+
+        <section class="history-layout">
+            <div id="statusBox" class="status" aria-live="polite"></div>
+
+            <section class="history-header">
+                <p class="section-kicker">Booking History</p>
+                <h1 class="history-title">Your past bookings</h1>
+                <p class="page-subtitle">Only logged-in users can see their own bookings. Each card shows the ticket details and lets you reopen the confirmation page.</p>
+            </section>
+
+            <section class="history-list">
+                <div id="historyList" class="history-grid"></div>
+            </section>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const statusBox = document.getElementById("statusBox");
+        const historyList = document.getElementById("historyList");
+        const siteSearchForm = document.getElementById("siteSearchForm");
+        const siteSearchInput = document.getElementById("siteSearchInput");
+
+        function showStatus(message, type) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`;
+        }
+
+        function formatPrice(value) {
+            return new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0
+            }).format(Number(value || 0));
+        }
+
+        function formatShowTime(value) {
+            if (!value) {
+                return "-";
+            }
+
+            return new Date(value).toLocaleString("en-IN", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
+        function renderBookings(bookings) {
+            if (!bookings || bookings.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">No bookings found yet. Once you complete a payment, your tickets will appear here.</div>';
+                return;
+            }
+
+            historyList.innerHTML = bookings.map((booking) => `
+                <article class="history-card">
+                    <div class="history-top">
+                        <div>
+                            <div class="history-code">${escapeHtml(booking.bookingCode || `Booking #${booking.id}`)}</div>
+                            <h2 class="section-heading">${escapeHtml(booking.movieTitle || "Booked movie")}</h2>
+                        </div>
+                        <div class="ticket-code">${escapeHtml(booking.status || "CONFIRMED")}</div>
+                    </div>
+                    <div class="history-meta">
+                        <div class="history-item"><span>Theatre</span>${escapeHtml(booking.theatreName || "-")}</div>
+                        <div class="history-item"><span>Screen</span>${escapeHtml(booking.screenName || "-")}</div>
+                        <div class="history-item"><span>Show Time</span>${escapeHtml(formatShowTime(booking.showStart))}</div>
+                        <div class="history-item"><span>Seats</span>${escapeHtml((booking.seatNumbers || [booking.seatNumber || "-"]).join(", "))}</div>
+                        <div class="history-item"><span>Total</span>${escapeHtml(formatPrice(booking.totalAmount))}</div>
+                        <div class="history-item"><span>Booked On</span>${escapeHtml(booking.bookingTime ? new Date(booking.bookingTime).toLocaleString("en-IN") : "-")}</div>
+                    </div>
+                    <div class="history-actions">
+                        <a class="button" href="confirmation.html?bookingId=${encodeURIComponent(booking.id)}">View Ticket</a>
+                        <a class="button secondary" href="confirmation.html?bookingId=${encodeURIComponent(booking.id)}" target="_blank" rel="noreferrer">Download Ticket</a>
+                    </div>
+                </article>
+            `).join("");
+        }
+
+        siteSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const searchTerm = siteSearchInput.value.trim();
+            window.location.href = searchTerm ? `index.html?search=${encodeURIComponent(searchTerm)}` : "index.html";
+        });
+
+        async function loadHistory() {
+            if (!isAuthenticated()) {
+                showStatus("Please login first to view booking history.", "error");
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1100);
+                return;
+            }
+
+            showStatus("Loading your bookings...", "info");
+
+            try {
+                const bookings = await getMyBookings();
+                renderBookings(bookings || []);
+                showStatus("Booking history loaded.", "success");
+            } catch (error) {
+                historyList.innerHTML = '<div class="history-empty">Unable to load booking history right now. Please try again after checking the backend.</div>';
+                showStatus(error.message || "Unable to load booking history.", "error");
+                console.error(error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadHistory);
+    </script>
+</body>
+</html>
